@@ -1,5 +1,6 @@
 var App = /** @class */ (function () {
     function App() {
+        this.host = "http://192.168.99.100:3000";
         this.init();
     }
     App.prototype.init = function () {
@@ -38,7 +39,7 @@ var App = /** @class */ (function () {
         this.saveButton.disabled = event.currentTarget.value ? false : true;
     };
     App.prototype.fetchData = function () {
-        return window.fetch('http://localhost:3000/getAll').then(function (response) {
+        return window.fetch(this.host + "/getAll").then(function (response) {
             return response.json();
         })["catch"](function (error) {
             return error;
@@ -67,7 +68,7 @@ var App = /** @class */ (function () {
         var _this = this;
         this.addEditModal.querySelector('.modal-title').innerHTML = 'Edit Todo';
         var id = event.currentTarget.parentNode.dataset.id;
-        window.fetch('http://localhost:3000/edit/' + id, {
+        window.fetch(this.host + "/edit/" + id, {
             method: "GET"
         }).then(function (response) { return response.json(); })
             .then(function (data) {
@@ -89,7 +90,7 @@ var App = /** @class */ (function () {
     App.prototype.deleteTodo = function (event) {
         var _this = this;
         var id = event.currentTarget.parentNode.dataset.id;
-        window.fetch('http://localhost:3000/delete/' + id, {
+        window.fetch(this.host + "/delete/" + id, {
             method: "DELETE"
         }).then(function (response) { return response.json(); })
             .then(function (data) {
@@ -109,7 +110,7 @@ var App = /** @class */ (function () {
             description: this.addEditModal.querySelector('#description-text').value
         };
         if (todo.id) {
-            window.fetch('http://localhost:3000/edit/' + todo.id, {
+            window.fetch(this.host + "/edit/" + todo.id, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -123,7 +124,7 @@ var App = /** @class */ (function () {
             })["catch"](function (data) { return console.log(data); });
         }
         else {
-            window.fetch('http://localhost:3000/add', {
+            window.fetch(this.host + "/add", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

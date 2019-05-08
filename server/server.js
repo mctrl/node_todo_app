@@ -15,10 +15,10 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json())
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'bulbstudios_admin',
-  password: 'UPWwBoxynISNm4Wa',
-  database: 'bulbstudios'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 })
 const port = 3000
 const loggedInUser = 1; //replace with login system when there is one;

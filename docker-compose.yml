@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  web:
+    image: node:8.11.1
+    working_dir: /usr/src/api
+    command: npm install --no-bin-links 
+    #command: npm install --no-bin-links nodemon -g
+    command: npm start
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+     - DB_HOST=db
+     - DB_NAME=bulbstudios
+     - DB_PASSWORD=UPWwBoxynISNm4Wa
+     - DB_USER=bulbstudios_admin
+    volumes:
+      - ./server:/usr/src/api
+    networks:
+      - bulb-site
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      #- ./db-data:/var/lib/mysql
+      - ./bulbstudios.sql:/docker-entrypoint-initdb.d/bulbstudios.sql
+    #ports:
+    #  - "3306:3306"
+    environment: 
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: bulbstudios
+      MYSQL_USER: bulbstudios_admin
+      MYSQL_PASSWORD: UPWwBoxynISNm4Wa
+    networks:
+      - bulb-site
+networks:
+  bulb-site:
+volumes:
+  api:
+  

@@ -22,6 +22,7 @@ class App {
     private saveButton: HTMLButtonElement;
     private todoDescriptionInput: HTMLElement;
     private todos: Array<ITodo>;
+    private host: string = "http://192.168.99.100:3000";
     constructor(){
         this.init();
     }
@@ -62,7 +63,7 @@ class App {
       this.saveButton.disabled = event.currentTarget.value ? false : true;
     }
     fetchData() {
-      return window.fetch('http://localhost:3000/getAll').then((response) => {
+      return window.fetch(`${this.host}/getAll`).then((response) => {
         return response.json();
       }).catch((error) => {
           return error;
@@ -102,7 +103,7 @@ class App {
     editTodo(event: any):void {
         this.addEditModal.querySelector('.modal-title').innerHTML = 'Edit Todo';
         const id = event.currentTarget.parentNode.dataset.id;
-        window.fetch('http://localhost:3000/edit/'+id, {
+        window.fetch(`${this.host}/edit/${id}`, {
             method: "GET", // *GET, POST, PUT, DELETE, etc.
           }).then(response => response.json())
           .then(data => {
@@ -124,7 +125,7 @@ class App {
     }
     deleteTodo(event: any):void {
       const id = event.currentTarget.parentNode.dataset.id;
-      window.fetch('http://localhost:3000/delete/'+id, {
+      window.fetch(`${this.host}/delete/${id}`, {
           method: "DELETE", // *GET, POST, PUT, DELETE, etc.
         }).then(response => response.json())
         .then(data => {
@@ -146,7 +147,7 @@ class App {
         description: (<HTMLInputElement>this.addEditModal.querySelector('#description-text')).value
       }
       if (todo.id) {
-        window.fetch('http://localhost:3000/edit/'+todo.id, {
+        window.fetch(`${this.host}/edit/${todo.id}`, {
             method: "PUT", // *GET, POST, PUT, DELETE, etc.
             headers: {
               "Content-Type": "application/json",
@@ -160,7 +161,7 @@ class App {
           })
           .catch(data => console.log(data));
       } else {
-        window.fetch('http://localhost:3000/add', {
+        window.fetch(`${this.host}/add`, {
             method: "POST", // *GET, POST, PUT, DELETE, etc.
             headers: {
               "Content-Type": "application/json",

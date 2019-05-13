@@ -1,17 +1,9 @@
 // create errorHandling helper to deal with success and error messages
-interface ITodo {
-  id: number,
-  title: string,
-  description: string,
-  created?: string,
-  username?: string
-  
-}
 
-interface IMessage {
-  error?:string,
-  message?:string
-}
+import {ITodo, IMessage, ITodoProvider} from "./interfaces";
+import TodoProvider from "./TodoProvider";
+
+
 
 class App {
     private el: HTMLElement;
@@ -21,12 +13,14 @@ class App {
     private messageBar: HTMLElement;
     private saveButton: HTMLButtonElement;
     private todoDescriptionInput: HTMLElement;
+    private todoProvider: ITodoProvider;
     private todos: Array<ITodo>;
-    private host: string = "http://192.168.99.100:3000";
     constructor(){
+        this.todoProvider = new TodoProvider();
         this.init();
     }
     init():void {
+      console.log('this is happenig again 2');
         this.cacheDom();
         this.bindEventListeners();
         this.refreshList();
@@ -63,11 +57,7 @@ class App {
       this.saveButton.disabled = event.currentTarget.value ? false : true;
     }
     fetchData() {
-      return window.fetch(`${this.host}/getAll`).then((response) => {
-        return response.json();
-      }).catch((error) => {
-          return error;
-      })
+      return this.todoProvider.getAllTodos()  
     }
 
     render(todoList: Array<ITodo>):void {
@@ -103,9 +93,7 @@ class App {
     editTodo(event: any):void {
         this.addEditModal.querySelector('.modal-title').innerHTML = 'Edit Todo';
         const id = event.currentTarget.parentNode.dataset.id;
-        window.fetch(`${this.host}/edit/${id}`, {
-            method: "GET", // *GET, POST, PUT, DELETE, etc.
-          }).then(response => response.json())
+        this.todoProvider.getTodo(id)
           .then(data => {
             if (data.error) {
               this.setMessage(data);
@@ -125,9 +113,7 @@ class App {
     }
     deleteTodo(event: any):void {
       const id = event.currentTarget.parentNode.dataset.id;
-      window.fetch(`${this.host}/delete/${id}`, {
-          method: "DELETE", // *GET, POST, PUT, DELETE, etc.
-        }).then(response => response.json())
+        this.todoProvider.deleteTodo(id)
         .then(data => {
           this.setMessage(data);
           this.refreshList();
@@ -147,13 +133,7 @@ class App {
         description: (<HTMLInputElement>this.addEditModal.querySelector('#description-text')).value
       }
       if (todo.id) {
-        window.fetch(`${this.host}/edit/${todo.id}`, {
-            method: "PUT", // *GET, POST, PUT, DELETE, etc.
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(todo)
-          }).then(response => response.json())
+        this.todoProvider.updateTodo(todo)
           .then(data => {
               $('#addEditModal').modal('hide')
               this.setMessage(data);
@@ -161,13 +141,7 @@ class App {
           })
           .catch(data => console.log(data));
       } else {
-        window.fetch(`${this.host}/add`, {
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(todo)
-          }).then(response => response.json())
+          this.todoProvider.addTodo(todo)
           .then(data => {
             $('#addEditModal').modal('hide')
             this.setMessage(data);

@@ -3,6 +3,8 @@ const mysql = require('mysql');
 const moment = require('moment');
 const bodyParser = require('body-parser')
 const app = express()
+const { check } = require('express-validator/check');
+const { sanitize, sanitizeBody } = require('express-validator/filter');
 
 
 app.use(function(req, res, next) {
@@ -40,7 +42,7 @@ app.get('/getAll', (req, res) => {
 })
 
 //sanitise inputs on these methods 
-app.delete('/delete/:id', (req, res) => {
+app.delete('/delete/:id', sanitize('id').escape().trim() ,(req, res) => {
   const query = `DELETE FROM todos WHERE id=${req.params.id} LIMIT 1`;
   connection.query(query, function (err, results, fields) {
     if (err) {
@@ -51,7 +53,10 @@ app.delete('/delete/:id', (req, res) => {
     })
 })
 
-app.get('/edit/:id', (req, res) => {
+
+//needs to return unescaped characters because it's loosing them
+//decode before passing it to ui
+app.get('/edit/:id', sanitize('id').escape().trim(), (req, res) => {
   const query = `SELECT t.id, t.title, t.description, t.created, u.username 
   FROM todos as t 
   INNER JOIN users AS u 
@@ -66,7 +71,11 @@ app.get('/edit/:id', (req, res) => {
     })
 })
 
-app.put('/edit/:id', (req, res) => {
+app.put('/edit/:id', [
+  sanitize('id').escape().trim(), 
+  sanitize('title').trim().escape(),
+  check('description').not().isEmpty().trim().escape()
+  ], (req, res) => {
   const now = moment().format('YYYY-MM-DD HH:mm:ss')
   const query = `UPDATE todos SET 
   title="${req.body.title}",
@@ -83,8 +92,11 @@ app.put('/edit/:id', (req, res) => {
     })
 })
 
-
-app.post('/add', (req, res) => {
+//checking of the description is not happening
+app.post('/add', [
+  sanitize('title').trim().escape(),
+  check('description').not().isEmpty().trim().escape()
+  ], (req, res) => {
   const query = `INSERT INTO todos SET 
   title="${req.body.title}",
   description="${req.body.description}",

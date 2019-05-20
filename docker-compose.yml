@@ -1,12 +1,10 @@
 version: "3"
 
 services:
-  web:
+  server:
     image: node:8.11.1
     working_dir: /usr/src/api
-    command: npm install --no-bin-links 
-    #command: npm install --no-bin-links nodemon -g
-    command: npm start
+    command: bash -c "npm install --no-bin-links && npm start"
     depends_on:
       - db
     ports:
@@ -41,4 +39,5 @@ networks:
   bulb-site:
 volumes:
   api:
+  app:
   

@@ -153,6 +153,7 @@ class App {
       (<HTMLInputElement>this.addEditModal.querySelector('#todo-id')).value = '';
       (<HTMLInputElement>this.addEditModal.querySelector('#title-name')).value = '';
       (<HTMLInputElement>this.addEditModal.querySelector('#description-text')).value = '';
+      this.saveButton.disabled = true;
 
     }
 

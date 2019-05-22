@@ -3,18 +3,16 @@ const mysql = require('mysql');
 const moment = require('moment');
 const bodyParser = require('body-parser')
 const app = express()
-const { check } = require('express-validator/check');
-const { sanitize, sanitizeBody } = require('express-validator/filter');
+const { check } = require('express-validator/check'); //input validation
+const { sanitize, sanitizeBody } = require('express-validator/filter'); //input sanitazation
+const morgan = require('morgan');
+const cors = require('cors');
+const helmet = require('helmet');
 
-
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  next();
-});
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.json())
+app.use(helmet()); //setup secure headers
+app.use(cors()); //access control middleware to enable CORS with various options.
+app.use(morgan('combined')); //server logging
+app.use(bodyParser.json()) // parse application/x-www-form-urlencoded
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
